@@ -44,6 +44,7 @@ public:
     CUSP(int argc, char** argv):
         Main(argc, argv)
         , approxMCOptions("ApproxMC options")
+        , searchMCOptions("SearchMC options")
     {
         must_interrupt.store(false, std::memory_order_relaxed);
     }
@@ -51,13 +52,18 @@ public:
     void add_supported_options() override;
 
     po::options_description approxMCOptions;
+    po::options_description searchMCOptions;
 
 private:
+    void add_searchmc_options();
     void add_approxmc_options();
     bool ScalApproxMC(SATCount& count);
     bool ApproxMC(SATCount& count);
+    bool SearchMC(SATCount& count);
     bool AddHash(uint32_t num_xor_cls, vector<Lit>& assumps);
     void SetHash(uint32_t clausNum, std::map<uint64_t,Lit>& hashVars, vector<Lit>& assumps);
+    void updateDist(double *mu_prime, double *sigma_prime, double mu, double sigma, uint64_t c, int k, uint64_t currentNumSolutions);
+    void trunc_norm_conf_interval(double mu, double sigma, double bound, double cl, double *lowerp, double *upperp);
 
     int64_t BoundedSATCount(uint32_t maxSolutions, const vector<Lit>& assumps);
     lbool BoundedSAT(
@@ -77,6 +83,8 @@ private:
     std::atomic<bool> must_interrupt;
     void call_after_parse() override;
 
+    double cl = 0.8;
+    double thres = 1.7;
     uint32_t startIteration = 0;
     uint32_t pivotApproxMC = 52;
     uint32_t tApproxMC = 17;
