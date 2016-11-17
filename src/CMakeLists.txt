@@ -202,7 +202,9 @@ if (NOT ONLY_SIMPLE)
             main.cpp
             signalcode.cpp
             scalmc.cpp
+            asa241.c
         )
+        target_link_libraries(scalmc m)
     endif()
 endif()
 add_executable(cryptominisat5_simple
